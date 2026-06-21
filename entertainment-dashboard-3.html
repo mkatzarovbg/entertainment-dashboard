@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Entertainment Hub — Kostenlos & Legal</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --card: #1a1a24;
+    --border: #2a2a3a;
+    --text: #e8e8f0;
+    --muted: #7070a0;
+    --films: #ff6b35;
+    --tv: #a855f7;
+    --music: #22d3ee;
+    --radio: #4ade80;
+    --podcast: #f59e0b;
+    --accent: #6366f1;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* HEADER */
+  header {
+    padding: 2.5rem 2rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    background: linear-gradient(180deg, #0d0d16 0%, var(--bg) 100%);
+  }
+
+  .logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #fff 0%, var(--muted) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .logo span {
+    background: linear-gradient(135deg, var(--films), var(--podcast));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .tagline {
+    font-size: 0.8rem;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 0.2rem;
+  }
+
+  .stats {
+    display: flex;
+    gap: 2rem;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-num {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .stat-label {
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  /* NAV TABS */
+  .nav-tabs {
+    display: flex;
+    gap: 0.5rem;
+    padding: 1.2rem 2rem;
+    overflow-x: auto;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    scrollbar-width: none;
+  }
+
+  .nav-tabs::-webkit-scrollbar { display: none; }
+
+  .tab-btn {
+    padding: 0.5rem 1.2rem;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .tab-btn:hover {
+    border-color: var(--accent);
+    color: var(--text);
+  }
+
+  .tab-btn.active {
+    color: #fff;
+    border-color: transparent;
+  }
+
+  .tab-btn[data-cat="all"].active { background: var(--accent); }
+  .tab-btn[data-cat="filme"].active { background: var(--films); }
+  .tab-btn[data-cat="tv"].active { background: var(--tv); }
+  .tab-btn[data-cat="musik"].active { background: var(--music); color: #000; }
+  .tab-btn[data-cat="radio"].active { background: var(--radio); color: #000; }
+  .tab-btn[data-cat="podcast"].active { background: var(--podcast); color: #000; }
+  .tab-btn[data-cat="bg"].active { background: #00b4d8; color: #000; }
+
+  /* MAIN GRID */
+  main {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .section {
+    margin-bottom: 3rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .section-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.4rem;
+    color: var(--text);
+  }
+
+  .section-count {
+    margin-left: auto;
+    font-size: 0.75rem;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 0.2rem 0.6rem;
+    border-radius: 100px;
+  }
+
+  /* CARDS */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.2rem;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    text-decoration: none;
+    display: block;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+
+  .card:hover {
+    border-color: rgba(255,255,255,0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+  }
+
+  .card:hover::before { opacity: 1; }
+
+  .filme .card::before { background: var(--films); }
+  .tv .card::before { background: var(--tv); }
+  .musik .card::before { background: var(--music); }
+  .radio .card::before { background: var(--radio); }
+  .podcast .card::before { background: var(--podcast); }
+  .bg .card::before { background: #00b4d8; }
+
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 0.7rem;
+  }
+
+  .card-icon {
+    font-size: 1.6rem;
+    line-height: 1;
+  }
+
+  .card-badge {
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .badge-free { background: rgba(74,222,128,0.15); color: var(--radio); }
+  .badge-reg { background: rgba(99,102,241,0.15); color: #818cf8; }
+
+  .card-name {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.3rem;
+    color: var(--text);
+  }
+
+  .card-focus {
+    font-size: 0.8rem;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 0.8rem;
+  }
+
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .tag {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.05);
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+
+  .card-url {
+    font-size: 0.75rem;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .card-url:hover { text-decoration: underline; }
+
+  .card-url::after { content: '↗'; font-size: 0.8rem; }
+
+  /* HIDDEN */
+  .section.hidden { display: none; }
+
+  /* SEARCH BAR */
+  .search-wrap {
+    padding: 1rem 2rem;
+    background: var(--surface);
+  }
+
+  .search-input {
+    width: 100%;
+    max-width: 500px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.9rem;
+    padding: 0.7rem 1rem;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .search-input:focus { border-color: var(--accent); }
+  .search-input::placeholder { color: var(--muted); }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 2rem;
+    color: var(--muted);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--border);
+  }
+
+  @media (max-width: 600px) {
+    header { padding: 1.5rem 1rem; }
+    main { padding: 1rem; }
+    .logo { font-size: 1.5rem; }
+    .stats { gap: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">Entertainment<span>Hub</span></div>
+    <div class="tagline">Kostenlos · Legal · Direkt</div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-num">40+</div><div class="stat-label">Quellen</div></div>
+    <div class="stat"><div class="stat-num">5</div><div class="stat-label">Kategorien</div></div>
+    <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Kostenlos</div></div>
+  </div>
+</header>
+
+<div class="search-wrap">
+  <input class="search-input" type="text" placeholder="🔍 Quelle suchen..." id="searchInput" oninput="filterCards()">
+</div>
+
+<div class="nav-tabs">
+  <button class="tab-btn active" data-cat="all" onclick="filterCat(this)">🎯 Alle</button>
+  <button class="tab-btn" data-cat="filme" onclick="filterCat(this)">🎬 Filme</button>
+  <button class="tab-btn" data-cat="tv" onclick="filterCat(this)">📺 TV-Serien</button>
+  <button class="tab-btn" data-cat="musik" onclick="filterCat(this)">🎵 Musik</button>
+  <button class="tab-btn" data-cat="radio" onclick="filterCat(this)">📻 Radio</button>
+  <button class="tab-btn" data-cat="podcast" onclick="filterCat(this)">🎙️ Podcasts</button>
+  <button class="tab-btn" data-cat="bg" onclick="filterCat(this)">🇧🇬 България</button>
+</div>
+
+<main>
+
+  <!-- FILME -->
+  <div class="section filme" id="sec-filme">
+    <div class="section-header">
+      <div class="section-dot" style="background:var(--films)"></div>
+      <div class="section-title">🎬 Filme & Serien</div>
+      <div class="section-count">8 Quellen</div>
+    </div>
+    <div class="cards-grid">
+
+      <a class="card" href="https://www.tubi.tv" target="_blank">
+        <div class="card-top"><div class="card-icon">🟠</div><div class="card-badge badge-free">Kostenlos</div></div>
+        <div class="card-name">Tubi TV</div>
+        <div class="card-focus">Größte kostenlose Streaming-Plattform — 50.000+ Filme & Serien, werbefinanziert</div>
+        <div class="card-tags"><span class="tag">Hollywood</span><span class="tag">Serien</span><span class="tag">Anime</span><span class="tag">Kinder</span></div>
+        <div class="card-url">tubi.tv</div>
+      </a>
+
+      <a class="card" href="https://pluto.tv" target="_blank">
+        <div class="card-top"><div class="card-icon">🪐</div><div class="card-badge badge-free">Kostenlos</div></div>
+        <div class="card-name">Pluto TV</div>
+        <div class="card-focus">Live-TV + On-Demand. 250+ Kanäle, Film & Serien ohne Anmeldung</div>
+        <div class="card-tags"><span class="tag">Live-TV</span><span class="tag">Filme</span><span class="tag">News</span><span class="tag">Sport</span></div>
+        <div class="card-url">pluto.tv</div>
+      </a>
+
+      <div class="card" style="cursor:default;">
+        <div class="card-top"><div class="card-icon">▶️</div><div class="card-badge badge-free">Безплатно</div></div>
+        <div class="card-name">YouTube — Български филми</div>
+        <div class="card-focus">Директни търсения за филми на български език или с български субтитри</div>
+        <div class="card-tags"><span class="tag">БГ Дублаж</span><span class="tag">БГ Субтитри</span><span class="tag">БГ Филми</span></div>
+        <div style="display:flex;flex-direction:column;gap:0.4rem;margin-top:0.6rem;">
+          <a href="https://www.youtube.com/results?search_query=филм+на+български" target="_blank" style="font-size:0.75rem;color:var(--films);text-decoration:none;display:flex;align-items:center;gap:0.3rem;">🎬 Филми на български ↗</a>
+          <a href="https://www.youtube.com/results?search_query=филм+с+български+субтитри" target="_blank" style="font-size:0.75rem;color:var(--films);text-decoration:none;display:flex;align-items:center;gap:0.3rem;">📝 Филми с БГ субтитри ↗</a>
+          <a href="https://www.youtube.com/results?search_query=български+филм+пълен" target="_blank" style="font-size:0.75rem;color:var(--films);text-decoration:none;display:flex;align-items:center;gap:0.3rem;">🇧🇬 Пълнометражни БГ филми ↗</a>
+          <a href="https://www.youtube.com/results?search_query=bulgarian+movie+full+subtitles" target="_blank" style="font-size:0.75rem;color:var(--films);text-decoration:none;display:flex;align-items:center;gap:0.3rem;">🌍 Bulgarian movies + subtitles ↗</a>
+          <a href="https://www.youtube.com/results?search_query=free+movie+bulgarian+dubbed" target="_blank" style="font-size:0.75rem;color:var(--films);text-decoration:none;display:flex;align-items:center;gap:0.3rem;">🎙️ Чужди филми с БГ дублаж ↗</a>
+        </div>
+      </div>
+
+      <a class="card" href="https://www.plex.tv" target="_blank">
+        <div class="card-top"><div class="card-icon">🟡</div><div class="card-badge badge-free">Kostenlos</div></div>
+        <div class="card-name">Plex</div>
+        <div class="card-focus">Kostenloser Streaming-Dienst + persönliche Mediathek. Film, TV, Musik alles an einem Ort</div>
+        <div class="card-tags"><span class="tag">Filme</span><span class="tag">TV</span><span class="tag">Musik</span><span class="tag">Podcast</span></div>
+        <div class="card-url">plex.tv</div>
+      </a>
+
+      <a class="card" href="https://www.crackle.com" target="_blank">
+        <div class="card-top"><div class="card-icon">⚡</div><div class="card-badge badge-free">Kostenlos</div></div>
+        <div class="card-name">Crackle</div>
+        <div class="card-focus">Sony-Plattform mit kostenlosen Filmen und Original-Serien</div>
+        <div class="card-tags"><span class="tag">Sony</span><span class="tag">Originals</span><span class="tag">Action</span><span class="tag">Comedy</span></div>
+        <div class="card-url">crackle.com</div>
+      </a>
+
+      <a class="card" href="https://www.kanopy.com" target="_blank">
+        <div class="card-top"><div class="card-icon">🌸</div><div class="card-badge badge-reg">Bibliothek</div></div>
+        <div class="card-name">Kanopy</div>
+        <div class="card-focus">Kostenlos mit Bibliotheksausweis — Arthouse, Dokumentation, Klassiker</div>
+        <div class="card-tags"><span class="tag">Arthouse</span><span class="tag">Doku</span><span class="tag">Klassiker</span></div>
+        <div class="card-url">kanopy.com</div>
+      </a>
+
+      <a class="card" href="https://mubi.com" target="_blank">
+        <div class="card-top"><div class="card-icon">🎞️</div><div class="card-badge badge-reg">7 Tage gratis</div></div>
+        <div class="card-name">MUBI</div>
+        <div class="card-focus">Kuratiertes Arthouse & Weltkinema — jeden Tag ein neuer Film. 7 Tage kostenlos</div>
+        <div class="card-tags"><span class="tag">Arthouse</span><span class="tag">International</span><span class="tag">Festival</span></div>
+        <div class="card-url">mubi.com</div>
+      </a>
+
+      <a class="card" href="https://archive.org/details/movies" target="_blank">
+        <div class="card-top"><div class="card-icon">🏛️</div><div class="card-badge badge-free">Kostenlos</div></div>
+        <div class="card-name">Internet Archive</div>
+        <div class="card-focus">Gemeinfreie Filme, Stummfilme, Dokumentationen und historische Aufnahmen</div>
+        <div class="card-tags"><span class="tag">Public Domain</span><span class="tag">Klassiker</span><span class="tag">Stummfilm</span></div>
+        <div class="card-url">archive.org/movies</div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- TV SERIEN -->
+  <div class="section tv" id="sec-tv">
+    <div class="section-header">
+      <div class="section-dot" style="background:var(--tv)"></div>
+      <div class="section-title">📺 TV-Serien</div>
+      <div class="section-count">6 Quellen</div>
+    </div>
+    <div class="cards-grid">
+
+      <a class="card" href="https://www.peacocktv.com" target="_blank">
+        <div class="card-top"><div class="card-icon">🦚</div><div class="card-badge badge-free">Kostenlos</div></div>
+        <div class="card-name">Peacock</div>
+        <div class="card-focus">NBC Universal — kostenlose Tier mit tausenden TV-Episoden, Reality, Sport</div>
+        <div class="card-tags"><span class="tag">NBC</span><span class="tag">Reality</span><span class="tag">Sport</span><span class="tag">News</span></div>
+        <div class="card-url">peacocktv.com</div>
+      </a>
+
+      <a class="card" href="https://www.imdb.com/tv/" target="_blank">
+        <div class="card-top"><div class="card-icon">⭐</div><div class="card-badge badge-free">Kostenlos</div></div>
+        <div class="card-name">IMDB TV (Freevee)</div>
+        <div class="card-focus">Amazon Freevee — kostenlose Serien & Filme mit Werbung direkt auf IMDB</div>
+        <div class="card-tags"><span class="tag">Amazon</span><span class="tag">Originals</span><span class="tag">Klassiker</span></div>
+        <div class="card-url">imdb.com/tv</div>
+      </a>
+
+      <a class="card" href="https://www.zdf.de/serien" target="_blank">
+        <div class="card-top"><div class="card-icon">🇩🇪</div><div class="card-badge badge-free">Kostenlos</div></div>
+        <div class="card-name">ZDF Mediathek</div>
+        <div class="card-focus">Deutsches öffentlich-rechtliches TV — Serien, Filme, Dokumentation auf Abruf</div>
+        <div class="card-tags"><span class="tag">Deutsch</span><span class="tag">ARD</span><span class="tag">Krimi</span><span class="tag">Doku</span></div>
+        <div class="card-url">zdf.de/serien</div>
+      </a>
+
+      <a class="card" href="https://www.ardmediathek.de" target="_blank">
+        <div class="card-top"><div class="card-icon">📡</div><div class="card-badge badge-free">Kostenlos</div></div>
+        <div class="card-name">ARD Mediathek</div>
+        <div class="card-focus">Vollständige ARD Mediathek — Tatort, Dokumentation, Kultur, Bildung</div>
+        <div class="card-tags"><span class="tag">Tatort</span><span class="tag">Bildung</span><span class="tag">Kultur</span></div>
+        <div class="card-url">ardmediathek.de</div>
+      </a>
+
+      <a class="card" href="https://www.3sat.de/mediathek" target="_blank">
+        <div class="card-top"><div class="card-icon">🎭</div><div class="card-badge badge-free">Kostenlos</div></div>
+        <div class="card-name">3sat Mediathek</div>
+        <div class="card-focus">Kultur, Wissenschaft, Gesellschaft — hochwertige Dokumentationen & Reportagen</div>
+        <div class="card-tags"><span class="tag">Kultur</span><span class="tag">Wissenschaft</span><span class="tag">Doku</span></div>
+        <div class="card-url">3sat.de/mediathek</div>
+      </a>
+
+      <a class="card" href="https://www.arte.tv" target="_blank">
+        <div class="card-top"><div class="card-icon">🎨</div><div class="card-badge badge-free">Kostenlos</div></div>
+        <div class="card-name">ARTE</div>
+        <div class="card-focus">Deutsch-Französischer Kultursender — Kunst, Geschichte, Weltkino, Konzerte</div>
+        <div class="card-tags"><span class="tag">Kunst</span><span class="tag">Geschichte</span><span class="tag">Konzert</span><span class="tag">Kino</span></div>
+        <div class="card-url">arte.tv</div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- MUSIK -->
+  <div class="section musik" id="sec-musik">
+    <div class="section-header">
+      <div class="section-dot" style="background:var(--music)"></div>
+      <div class="section-title">🎵 Musik</div>
+      <div class="section-count">7 Quellen</div>
+    </div>
+    <div class="cards-grid">
+
+      <a class="card" href="https://open.spotify.com" target="_blank">
+        <div class="card-top"><div class="card-icon">💚</div><div class="card-badge badge-free">Kostenlos</div></div>
+        <div class="card-name">Spotify</div>
+        <div class="card-focus">100 Mio. Songs kostenlos mit Werbung. Playlists, Podcasts, Hörbücher</div>
+        <div class="card-tags"><span class="tag">Alle Genres</span><span class="tag">Playlist</span><span class="tag">Podcast</span></div>
+        <div class="card-url">open.spotify.com</div>
+      </a>
+
+      <a class="card" href="https://music.youtube.com" target="_blank">
+        <div class="card-top"><div class="card-icon">🔴</div><div class="card-badge badge-free">Kostenlos</div></div>
+        <div class="card-name">YouTube Music</div>
+        <div class="card-focus">Kostenloser Zugang zu Millionen Songs, Live-Versionen, Remixes & Covers</div>
+        <div class="card-tags"><span class="tag">Live</span><span class="tag">Remix</span><span class="tag">Cover</span><span class="tag">Alle Genres</span></div>
+        <div class="card-url">music.youtube.com</div>
+      </a>
+
+      <a class="card" href="https://www.deezer.com" target="_blank">
+        <div class="card-top"><div class="card-icon">🟣</div><div class="card-badge badge-free">Kostenlos</div></div>
+        <div class="card-name">Deezer</div>
+        <div class="card-focus">90 Mio. Tracks, Flow-Funktion für personalisierte Musik. Kostenlose Tier verfügbar</div>
+        <div class="card-tags"><span class="tag">Flow</span><span class="tag">Podcast</span><span class="tag">Hörbuch</span></div>
+        <div class="card-url">deezer.com</div>
+      </a>
+
+      <a class="card" href="https://soundcloud.com" target="_blank">
+        <div class="card-top"><div class="card-icon">🟠</div><div class="card-badge badge-free">Kostenlos</div></div>
+        <div class="card-name">SoundCloud</div>
+        <div class="card-focus">Indie, Underground, aufkommende Künstler — 300 Mio. Tracks. Ideal für Entdeckungen</div>
+        <div class="card-tags"><span class="tag">Indie</span><span class="tag">EDM</span><span class="tag">Hip-Hop</span><span class="tag">Unsigned</span></div>
+        <div class="card-url">soundcloud.com</div>
+      </a>
+
+      <a class="card" href="https://www.jamendo.com" target="_blank">
+        <div class="card-top"><div class="card-icon">🎸</div><div class="card-badge badge-free">Kostenlos</div></div>
+        <div class="card-name">Jamendo</div>
+        <div class="card-focus">Creative-Commons-Musik — alles 100% legal und kostenlos streambar & downloadbar</div>
+        <div class="card-tags"><span class="tag">CC-Lizenz</span><span class="tag">Download</span><span class="tag">Indie</span></div>
+        <div class="card-url">jamendo.com</div>
+      </a>
+
+      <a class="card" href="https://www.last.fm" target="_blank">
+        <div class="card-top"><div class="card-icon">📊</div><div class="card-badge badge-free">Kostenlos</div></div>
+        <div class="card-name">Last.fm</div>
+        <div class="card-focus">Musik-Discovery und Statistiken — findet neue Musik basierend auf deinem Geschmack</div>
+        <div class="card-tags"><span class="tag">Discovery</span><span class="tag">Charts</span><span class="tag">Ähnliche Künstler</span></div>
+        <div class="card-url">last.fm</div>
+      </a>
+
+      <a class="card" href="https://www.bandcamp.com" target="_blank">
+        <div class="card-top"><div class="card-icon">🎤</div><div class="card-badge badge-free">Kostenlos</div></div>
+        <div class="card-name">Bandcamp</div>
+        <div class="card-focus">Direktunterstützung für Künstler — viele Alben kostenlos streambar, kaufbar</div>
+        <div class="card-tags"><span class="tag">Indie</span><span class="tag">Metal</span><span class="tag">Jazz</span><span class="tag">Experimental</span></div>
+        <div class="card-url">bandcamp.com</div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- RADIO -->
+  <div class="section radio" id="sec-radio">
+    <div class="section-header">
+      <div class="section-dot" style="background:var(--radio)"></div>
+      <div class="section-title">📻 Radio</div>
+      <div class="section-count">6 Quellen</div>
+    </div>
+    <div class="cards-grid">
+
+      <a class="card" href="https://www.radio.de" target="_blank">
+        <div class="card-top"><div class="card-icon">📡</div><div class="card-badge badge-free">Kostenlos</div></div>
+        <div class="card-name">Radio.de</div>
+        <div class="card-focus">30.000+ Radiosender weltweit in einer App. Suche nach Genre, Land, Sprache</div>
+        <div class="card-tags"><span class="tag">Weltweit</span><span class="tag">Live</span><span class="tag">Alle Genres</span></div>
+        <div class="card-url">radio.de</div>
+      </a>
+
+      <a class="card" href="https://www.iheart.com" target="_blank">
+        <div class="card-top"><div class="card-icon">❤️</div><div class="card-badge badge-free">Kostenlos</div></div>
+        <div class="card-name">iHeartRadio</div>
+        <div class="card-focus">Live-Radio, Podcasts und personalisierte Sender. Größte Radio-App der USA</div>
+        <div class="card-tags"><span class="tag">Live</span><span class="tag">Podcast</span><span class="tag">Talk</span><span class="tag">Musik</span></div>
+        <div class="card-url">iheart.com</div>
+      </a>
+
+      <a class="card" href="https://www.bbc.co.uk/sounds" target="_blank">
+        <div class="card-top"><div class="card-icon">🇬🇧</div><div class="card-badge badge-free">Kostenlos</div></div>
+        <div class="card-name">BBC Sounds</div>
+        <div class="card-focus">BBC Radio 1-6, Podcasts, Musik-Mixes und Originale — weltweit kostenlos</div>
+        <div class="card-tags"><span class="tag">BBC</span><span class="tag">News</span><span class="tag">Klassik</span><span class="tag">Indie</span></div>
+        <div class="card-url">bbc.co.uk/sounds</div>
+      </a>
+
+      <a class="card" href="https://www.deutschlandradio.de" target="_blank">
+        <div class="card-top"><div class="card-icon">🎙️</div><div class="card-badge badge-free">Kostenlos</div></div>
+        <div class="card-name">Deutschlandradio</div>
+        <div class="card-focus">Deutschlandfunk, Deutschlandfunk Kultur, Nova — öffentlich-rechtliches Radio</div>
+        <div class="card-tags"><span class="tag">News</span><span class="tag">Kultur</span><span class="tag">Feature</span></div>
+        <div class="card-url">deutschlandradio.de</div>
+      </a>
+
+      <a class="card" href="https://tunein.com" target="_blank">
+        <div class="card-top"><div class="card-icon">🔊</div><div class="card-badge badge-free">Kostenlos</div></div>
+        <div class="card-name">TuneIn</div>
+        <div class="card-focus">100.000+ Radiosender, Podcasts und Sportübertragungen weltweit live</div>
+        <div class="card-tags"><span class="tag">Sport</span><span class="tag">Nachrichten</span><span class="tag">Talk</span><span class="tag">Musik</span></div>
+        <div class="card-url">tunein.com</div>
+      </a>
+
+      <a class="card" href="https://www.mixcloud.com" target="_blank">
+        <div class="card-top"><div class="card-icon">🌊</div><div class="card-badge badge-free">Kostenlos</div></div>
+        <div class="card-name">Mixcloud</div>
+        <div class="card-focus">DJ-Mixes, Radio-Shows und Podcasts — ideal für elektronische Musik & Club-Sets</div>
+        <div class="card-tags"><span class="tag">DJ</span><span class="tag">EDM</span><span class="tag">House</span><span class="tag">Techno</span></div>
+        <div class="card-url">mixcloud.com</div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- PODCASTS -->
+  <div class="section podcast" id="sec-podcast">
+    <div class="section-header">
+      <div class="section-dot" style="background:var(--podcast)"></div>
+      <div class="section-title">🎙️ Podcasts</div>
+      <div class="section-count">7 Quellen</div>
+    </div>
+    <div class="cards-grid">
+
+      <a class="card" href="https://podcasts.apple.com" target="_blank">
+        <div class="card-top"><div class="card-icon">🎵</div><div class="card-badge badge-free">Kostenlos</div></div>
+        <div class="card-name">Apple Podcasts</div>
+        <div class="card-focus">Größte Podcast-Plattform — 2 Mio.+ Podcasts kostenlos. Beste Suchfunktion</div>
+        <div class="card-tags"><span class="tag">Alle Themen</span><span class="tag">Charts</span><span class="tag">Originals</span></div>
+        <div class="card-url">podcasts.apple.com</div>
+      </a>
+
+      <a class="card" href="https://open.spotify.com/podcasts" target="_blank">
+        <div class="card-top"><div class="card-icon">💚</div><div class="card-badge badge-free">Kostenlos</div></div>
+        <div class="card-name">Spotify Podcasts</div>
+        <div class="card-focus">Exklusive Originals, True Crime, Business, Comedy — alles kostenlos</div>
+        <div class="card-tags"><span class="tag">True Crime</span><span class="tag">Business</span><span class="tag">Comedy</span><span class="tag">Originals</span></div>
+        <div class="card-url">spotify.com/podcasts</div>
+      </a>
+
+      <a class="card" href="https://podcastaddict.com" target="_blank">
+        <div class="card-top"><div class="card-icon">🎧</div><div class="card-badge badge-free">Kostenlos</div></div>
+        <div class="card-name">Podcast Addict</div>
+        <div class="card-focus">4 Mio.+ Podcasts, Hörbücher, Radio in einer App. Beste Discovery-Funktionen</div>
+        <div class="card-tags"><span class="tag">Discovery</span><span class="tag">Download</span><span class="tag">Hörbuch</span></div>
+        <div class="card-url">podcastaddict.com</div>
+      </a>
+
+      <a class="card" href="https://www.podcastrepublic.net" target="_blank">
+        <div class="card-top"><div class="card-icon">🌍</div><div class="card-badge badge-free">Kostenlos</div></div>
+        <div class="card-name">Podcast Republic</div>
+        <div class="card-focus">Einfacher Podcast-Player mit Offline-Download. Ideal für Einsteiger</div>
+        <div class="card-tags"><span class="tag">Offline</span><span class="tag">Einsteiger</span><span class="tag">Alle Genres</span></div>
+        <div class="card-url">podcastrepublic.net</div>
+      </a>
+
+      <a class="card" href="https://www.deutschlandfunk.de/podcasts" target="_blank">
+        <div class="card-top"><div class="card-icon">🎤</div><div class="card-badge badge-free">Kostenlos</div></div>
+        <div class="card-name">Deutschlandfunk Podcasts</div>
+        <div class="card-focus">Hochwertige deutsche Podcasts zu Politik, Wissenschaft, Kultur und Gesellschaft</div>
+        <div class="card-tags"><span class="tag">Deutsch</span><span class="tag">Politik</span><span class="tag">Wissenschaft</span><span class="tag">Kultur</span></div>
+        <div class="card-url">deutschlandfunk.de/podcasts</div>
+      </a>
+
+      <a class="card" href="https://www.ardaudiothek.de" target="_blank">
+        <div class="card-top"><div class="card-icon">📻</div><div class="card-badge badge-free">Kostenlos</div></div>
+        <div class="card-name">ARD Audiothek</div>
+        <div class="card-focus">Features, Hörspiele, Reportagen und Podcasts aus dem ARD-Netzwerk</div>
+        <div class="card-tags"><span class="tag">Hörspiel</span><span class="tag">Feature</span><span class="tag">Reportage</span></div>
+        <div class="card-url">ardaudiothek.de</div>
+      </a>
+
+      <a class="card" href="https://podcastindex.org" target="_blank">
+        <div class="card-top"><div class="card-icon">📡</div><div class="card-badge badge-free">Kostenlos</div></div>
+        <div class="card-name">Podcast Index</div>
+        <div class="card-focus">Open-Source Podcast-Verzeichnis — unabhängig von Big Tech. 4 Mio.+ Feeds</div>
+        <div class="card-tags"><span class="tag">Open Source</span><span class="tag">Unabhängig</span><span class="tag">RSS</span></div>
+        <div class="card-url">podcastindex.org</div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- БЪЛГАРСКИ ИЗТОЧНИЦИ -->
+  <div class="section bg" id="sec-bg">
+    <div class="section-header">
+      <div class="section-dot" style="background:#00b4d8"></div>
+      <div class="section-title">🇧🇬 Български източници</div>
+      <div class="section-count">10 Източника</div>
+    </div>
+    <div class="cards-grid">
+
+      <a class="card" href="https://bnt.bg" target="_blank">
+        <div class="card-top"><div class="card-icon">📡</div><div class="card-badge badge-free">Безплатно</div></div>
+        <div class="card-name">БНТ</div>
+        <div class="card-focus">Българска национална телевизия — новини, предавания, документални филми и архив на живо</div>
+        <div class="card-tags"><span class="tag">Новини</span><span class="tag">Документални</span><span class="tag">Архив</span><span class="tag">На живо</span></div>
+        <div class="card-url">bnt.bg</div>
+      </a>
+
+      <a class="card" href="https://btv.bg" target="_blank">
+        <div class="card-top"><div class="card-icon">🔵</div><div class="card-badge badge-free">Безплатно</div></div>
+        <div class="card-name">bTV</div>
+        <div class="card-focus">bTV онлайн — новини, сериали, предавания и филми с българско озвучаване</div>
+        <div class="card-tags"><span class="tag">Сериали</span><span class="tag">Новини</span><span class="tag">Риалити</span><span class="tag">Филми</span></div>
+        <div class="card-url">btv.bg</div>
+      </a>
+
+      <a class="card" href="https://play.nova.bg" target="_blank">
+        <div class="card-top"><div class="card-icon">🟠</div><div class="card-badge badge-free">Безплатно</div></div>
+        <div class="card-name">Nova Play</div>
+        <div class="card-focus">Nova онлайн платформа — филми, сериали, новини и предавания с БГ дублаж</div>
+        <div class="card-tags"><span class="tag">Филми</span><span class="tag">Сериали</span><span class="tag">БГ Дублаж</span><span class="tag">На живо</span></div>
+        <div class="card-url">play.nova.bg</div>
+      </a>
+
+
+
+
+
+      <a class="card" href="https://www.elemental.tv/bg/" target="_blank">
+        <div class="card-top"><div class="card-icon">⚡</div><div class="card-badge badge-reg">Безплатен план</div></div>
+        <div class="card-name">Elemental.TV</div>
+        <div class="card-focus">Интерактивна HD телевизия — BNT, bTV, Nova, Diema и още. Пауза, превъртане, запис до 10 дни</div>
+        <div class="card-tags"><span class="tag">HD</span><span class="tag">Пауза</span><span class="tag">Запис</span><span class="tag">4 екрана</span></div>
+        <div class="card-url">elemental.tv</div>
+      </a>
+
+      <a class="card" href="https://playtube.tv" target="_blank">
+        <div class="card-top"><div class="card-icon">🎞️</div><div class="card-badge badge-free">Безплатно</div></div>
+        <div class="card-name">PlayTube.tv</div>
+        <div class="card-focus">Българска платформа за видеосподеляне — клипове, музика, забавление. Топ 5 стрийминг сайт в България с 4.2% пазарен дял</div>
+        <div class="card-tags"><span class="tag">Видеа</span><span class="tag">Музика</span><span class="tag">Забавление</span><span class="tag">БГ</span></div>
+        <div class="card-url">playtube.tv</div>
+      </a>
+
+      <a class="card" href="https://www.vbox7.com" target="_blank">
+        <div class="card-top"><div class="card-icon">📦</div><div class="card-badge badge-free">Безплатно</div></div>
+        <div class="card-name">Vbox7</div>
+        <div class="card-focus">Най-голямата БГ видео платформа — музика, уеб сериали, реалити и ТОП 40 класации. Собственост на Нова Броудкастинг Груп</div>
+        <div class="card-tags"><span class="tag">Музика</span><span class="tag">Сериали</span><span class="tag">ТОП 40</span><span class="tag">Реалити</span></div>
+        <div class="card-url">vbox7.com</div>
+      </a>
+
+      <a class="card" href="https://www.videoclip.bg" target="_blank">
+        <div class="card-top"><div class="card-icon">🎞️</div><div class="card-badge badge-free">Безплатно</div></div>
+        <div class="card-name">Videoclip.bg</div>
+        <div class="card-focus">Българска платформа за видео споделяне — клипове, музика и потребителско съдържание</div>
+        <div class="card-tags"><span class="tag">Клипове</span><span class="tag">Музика</span><span class="tag">БГ</span><span class="tag">Потребителско</span></div>
+        <div class="card-url">videoclip.bg</div>
+      </a>
+
+      <a class="card" href="https://nova.bg" target="_blank">
+        <div class="card-top"><div class="card-icon">🟠</div><div class="card-badge badge-free">Безплатно</div></div>
+        <div class="card-name">Nova.bg</div>
+        <div class="card-focus">Второто място по трафик в БГ стрийминг — новини, сериали, предавания и видео архив на Nova телевизия</div>
+        <div class="card-tags"><span class="tag">Новини</span><span class="tag">Сериали</span><span class="tag">Архив</span><span class="tag">На живо</span></div>
+        <div class="card-url">nova.bg</div>
+      </a>
+
+      <a class="card" href="https://playtube.tv" target="_blank">
+        <div class="card-top"><div class="card-icon">🎥</div><div class="card-badge badge-free">Безплатно</div></div>
+        <div class="card-name">PlayTube.tv</div>
+        <div class="card-focus">Българска видео платформа за споделяне и гледане на клипове — 4-то място по популярност в БГ</div>
+        <div class="card-tags"><span class="tag">Видео</span><span class="tag">Клипове</span><span class="tag">Безплатно</span><span class="tag">БГ</span></div>
+        <div class="card-url">playtube.tv</div>
+      </a>
+
+      <a class="card" href="https://www.justwatch.com/bg" target="_blank">
+        <div class="card-top"><div class="card-icon">🔍</div><div class="card-badge badge-free">Безплатно</div></div>
+        <div class="card-name">JustWatch България</div>
+        <div class="card-focus">Търсачка за всички БГ стрийминг платформи — намери на коя платформа е даден филм</div>
+        <div class="card-tags"><span class="tag">Търсачка</span><span class="tag">Nova Play</span><span class="tag">Netflix</span><span class="tag">Сравнение</span></div>
+        <div class="card-url">justwatch.com/bg</div>
+      </a>
+
+      <a class="card" href="https://playtube.tv" target="_blank">
+        <div class="card-top"><div class="card-icon">▶️</div><div class="card-badge badge-free">Безплатно</div></div>
+        <div class="card-name">PlayTube.tv</div>
+        <div class="card-focus">Българска платформа за видеосъдържание — гледай, качвай и споделяй видеа безплатно. #3 стрийминг сайт в България</div>
+        <div class="card-tags"><span class="tag">Видео</span><span class="tag">БГ Съдържание</span><span class="tag">Безплатно</span><span class="tag">Споделяне</span></div>
+        <div class="card-url">playtube.tv</div>
+      </a>
+
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  Entertainment Hub — Alle Quellen sind 100% kostenlos & legal ·  Kein Abo erforderlich
+</footer>
+
+<script>
+  function filterCat(btn) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const cat = btn.dataset.cat;
+    document.querySelectorAll('.section').forEach(sec => {
+      if (cat === 'all') {
+        sec.classList.remove('hidden');
+      } else {
+        sec.classList.toggle('hidden', !sec.classList.contains(cat));
+      }
+    });
+  }
+
+  function filterCards() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    document.querySelectorAll('.card').forEach(card => {
+      const text = card.innerText.toLowerCase();
+      card.style.display = text.includes(q) ? 'block' : 'none';
+    });
+    // Show all sections when searching
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('hidden'));
+  }
+</script>
+
+</body>
+</html>
